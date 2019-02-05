@@ -1,0 +1,76 @@
+---
+title: "Contact Center"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+daily <- read.csv("C:/Users/nshetty/Downloads/Daily Data.csv")
+y1<-daily[,1]
+y2<-daily[,2]
+y3<-daily[,3]
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(ts(y1),main="Calls Accepted")
+plot(ts(y2),main="Average number of logged in agents")
+plot(ts(y3),main="Calls Abandoned")
+```
+
+
+```{r pressure, echo=FALSE}
+acf(ts(y1), lag.max = 25, type="correlation", main="ACF of y1")
+acf(ts(y1), lag.max = 25, type="partial", main="PACF of y1")
+acf(ts(y2), lag.max = 25, type="correlation", main="ACF of y2")
+acf(ts(y2), lag.max = 25, type="partial", main="PACF of y2")
+acf(ts(y3), lag.max = 25, type="correlation", main="ACF of y3")
+acf(ts(y3), lag.max = 25, type="partial", main="PACF of y3")
+ccf(ts(y1), ts(y3), main="CCF of y1(t) and y3(t)", ylab="CCF")
+ccf(ts(y2), ts(y3), main="CCF of y2(t) and y3(t)", ylab="CCF")
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+VAR1<-VAR(daily, p=1, type="const")
+summary(VAR1)
+```
+```{r}
+prd <- predict(VAR1, n.ahead = 1, ci = 0.95)
+prd
+```
+acf(residuals(VAR1)[,3], lag.max = 25, type="correlation", main="ACF of y3 residuals")
+```{r}
+acf(residuals(VAR1)[,3], lag.max = 25, type="correlation", main="ACF of y3 residuals")
+acf(residuals(VAR1)[,3], lag.max = 25, type="partial", main="PACF of y3 residuals")
+```
+```{r}
+modela <- lm(Staff~ Average.Number.of.Logged,data = staff)
+summary(modela)
+```
+```{r}
+modelb <- lm(Average.Number.of.Logged~ Staff,data = staff)
+summary(modelb)
+```
+```{r}
+modelc <-betareg(y.transf.betareg(Percent.Abandoned)~Calls.Accepted + Day + Average.Number.of.Logged, data=dailyP)
+summary(modelc)
+```
+```{r}
+modeld <-betareg(y.transf.betareg(Percent.Abandoned)~Calls.Accepted + Average.Number.of.Logged, data=dailyP)
+summary(modeld)
+```
+
